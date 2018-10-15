@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Todos.Models;
 
-namespace todos.Web.Controllers
+namespace Todos.Web.Controllers
 {
     // https://app.swaggerhub.com/apis/aweiker/ToDo/1.0.0
     [Route("[controller]")]
