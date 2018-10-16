@@ -9,5 +9,6 @@ namespace Todos
         T GetById(Guid id);
         IEnumerable<T> GetAll();
         void Update(T item);
+        void Delete(Guid id);
     }
 }

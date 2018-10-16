@@ -15,47 +15,19 @@ namespace Todos
             _collectionName = typeof(T).Name.Pluralize().Underscore();
         }
         
-        public void Create(T item)
-        {
-            using (var db = Db())
-            {
-                var col = db.GetCollection<T>(_collectionName);
-                col.Insert(item);
-            }
-        }
+        public void Create(T item) => Execute(col => col.Insert(item));
+        public T GetById(Guid id) => Execute(col => col.FindOne(item => item.Id == id));
+        public IEnumerable<T> GetAll() => Execute(col => col.FindAll());
+        public void Update(T item) => Execute(col => col.Update(item));
+        public void Delete(Guid id) => Execute(col => col.Delete(item => item.Id == id));
 
-        public T GetById(Guid id)
+        private TRet Execute<TRet>(Func<LiteCollection<T>, TRet> func)
         {
-            using (var db = Db())
+            using (var db = new LiteDatabase(@"C:\Temp\MyData.db"))
             {
                 var col = db.GetCollection<T>(_collectionName);
-                return col.FindOne(item => item.Id == id);
+                return func.Invoke(col);
             }
-        }
-
-        public IEnumerable<T> GetAll()
-        {
-            using (var db = Db())
-            {
-                var col = db.GetCollection<T>(_collectionName);
-                return col.FindAll();
-            }
-        }
-
-        public void Update(T item)
-        {
-            using (var db = Db())
-            {
-                var col = db.GetCollection<T>(_collectionName);
-                col.Update(item);
-            }
-        }
-        
-        
-        private static LiteDatabase Db()
-        {
-            return new LiteDatabase(@"C:\Temp\MyData.db");
         }
     }
-    
 }
