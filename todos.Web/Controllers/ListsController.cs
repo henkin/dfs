@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Todos.Models;
 
@@ -9,15 +11,29 @@ namespace Todos.Web.Controllers
     [ApiController]
     public class ListsController : ControllerBase
     {
-        public ListsController()
+        private readonly IRepository<TaskList> _repository;
+
+        public ListsController(IRepository<TaskList> repository)
         {
-            
+            _repository = repository;
         }
         // GET api/values
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public ActionResult<IEnumerable<TaskList>> Get()
         {
-            return new[] { new TaskList { Name = "foo", Description = "boo"} };
+            try
+            {
+                var taskLists = _repository.GetAll();
+                return new JsonResult(taskLists);
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+//                var responseMessage = new ResponseMessage<List<string>>(errors, HttpStatusCode.BadRequest);
+//                throw new HttpResponseException(responseMessage);                
+            }
         }
 
         // GET api/values/5
@@ -43,6 +59,13 @@ namespace Todos.Web.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+        
+        [HttpGet("/")]
+        [Produces("text/html")]
+        public ContentResult About()
+        {
+            return Content("<html><body><a href='Lists'>Lists</a></body></html>", "text/html");
         }
     }
 }

@@ -1,9 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>netcoreapp2.1</TargetFramework>
-        <AssemblyName>Todos.Web.Tests</AssemblyName>
-        <RootNamespace>Todos.Web.Tests</RootNamespace>
-    </PropertyGroup>
-
-</Project>
