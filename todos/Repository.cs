@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Humanizer;
 using LiteDB;
 using Todos.Models;
@@ -18,6 +19,7 @@ namespace Todos
         public void Create(T item) => Execute(col => col.Insert(item));
         public T GetById(Guid id) => Execute(col => col.FindOne(item => item.Id == id));
         public IEnumerable<T> GetAll() => Execute(col => col.FindAll());
+        public IEnumerable<T> Find(Expression<Func<T, bool>> predicate) => Execute(col => col.Find(predicate));
         public void Update(T item) => Execute(col => col.Update(item));
         public void Delete(Guid id) => Execute(col => col.Delete(item => item.Id == id));
 
