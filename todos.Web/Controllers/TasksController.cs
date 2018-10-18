@@ -12,35 +12,30 @@ namespace Todos.Web.Controllers
     // https://app.swaggerhub.com/apis/aweiker/ToDo/1.0.0
     [Route("[controller]")]
     [ApiController]
-    public class ListsController : ControllerBase
+    public class TasksController : ControllerBase
     {
-        private readonly IRepository<TodoTaskList> _listRepository;
+//        private readonly IRepository<TodoTaskList> _listRepository;
         private readonly IRepository<TodoTask> _taskRepository;
 
-        public ListsController(IRepository<TodoTaskList> listRepository, IRepository<TodoTask> taskRepository)
+        public TasksController(IRepository<TodoTask> taskRepository)
         {
-            _listRepository = listRepository;
+            //_listRepository = listRepository;
             _taskRepository = taskRepository;
         }
         
         // GET /Lists
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
         public ActionResult<IEnumerable<TaskListModel>> Get()
         {
             try
             {
-                var taskLists = _listRepository.GetAll();
                 var tasks = _taskRepository.GetAll();
-                var listsWithTasks = taskLists.Select(list => 
-                    list.FromTodoTaskList(tasks.Where(t => t.TaskListId == list.Id))
-                    ).ToList();
-                return new JsonResult(listsWithTasks);
+                return new JsonResult(tasks);
             }
             catch (Exception ex)
             {
-                throw;
+                return StatusCode((int) HttpStatusCode.NotFound);
+                //return StatusCode((int) HttpStatusCode.InternalServerError, ex.Message);
             }               
         }
 
@@ -50,9 +45,8 @@ namespace Todos.Web.Controllers
         {
             try
             {
-                var taskList = _listRepository.GetById(id);
-                var tasks = _taskRepository.Find(t => t.TaskListId == id).ToList();
-                return new JsonResult(taskList.FromTodoTaskList(tasks));
+                var task = _taskRepository.GetById(id);
+                return new JsonResult(task);
             }
             catch (Exception ex)
             {
@@ -62,16 +56,15 @@ namespace Todos.Web.Controllers
 
         // POST /Lists
         [HttpPost]
-        public ActionResult Post([FromBody] TaskListModel taskList)
+        public ActionResult Post([FromBody] TaskModel taskList)
         {
             try
             {
-                var list = taskList.ToTodoTaskList();
-                _listRepository.Create(list);
-                var tasks = taskList.Tasks.Select(t => t.ToTodoTask(list.Id)).ToList();
-                tasks.ForEach(t => _taskRepository.Create(t));
+                var task = taskList.ToTodoTask();
+                _taskRepository.Create(task);
                 
                 return CreatedAtAction("Get", new {id = taskList.Id}, taskList);
+                //Ok();
             }
             catch (Exception ex)
             {

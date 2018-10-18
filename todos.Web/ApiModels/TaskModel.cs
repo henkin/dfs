@@ -11,15 +11,12 @@ namespace todos.Web.ApiModels
         public string Name { get; set; }
         public bool Completed { get; set; }
 
-        public static List<TaskModel> FromTodoTasks(IEnumerable<TodoTask> todoTasks)
+        public TaskModel()
         {
-            return todoTasks.Select(task => new TaskModel
-            {
-                Id = task.Id,
-                Name = task.Name,
-                Completed = task.Completed
-            }).ToList();
+            Id = Guid.NewGuid();
         }
+
+        
 
         public override string ToString()
         {

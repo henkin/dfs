@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using todos.Models;
 using Todos.Models;
@@ -14,6 +15,7 @@ namespace todos.Web.ApiModels
                 cfg.CreateMap<TaskListModel, TodoTaskList>();
                 cfg.CreateMap<TodoTaskList, TaskListModel>();
                 cfg.CreateMap<TaskModel, TodoTask>();
+                cfg.CreateMap<TodoTask, TaskModel>();
             });
         }
 
@@ -22,9 +24,14 @@ namespace todos.Web.ApiModels
             return Mapper.Map<TodoTaskList>(model);
         }
 
+        public static TodoTask ToTodoTask(this TaskModel model)
+        {
+            return Mapper.Map<TodoTask>(model);
+        }
+
         public static TodoTask ToTodoTask(this TaskModel model, Guid listId)
         {
-            var task = Mapper.Map<TodoTask>(model);
+            var task = model.ToTodoTask();
             task.TaskListId = listId;
             return task;
         }
@@ -32,8 +39,13 @@ namespace todos.Web.ApiModels
         public static TaskListModel FromTodoTaskList(this TodoTaskList list, IEnumerable<TodoTask> todoTasks)
         {
             var model = Mapper.Map<TaskListModel>(list);
-            model.Tasks = TaskModel.FromTodoTasks(todoTasks);
+            model.Tasks = todoTasks.FromTodoTasks();
             return model;
+        }
+
+        public static List<TaskModel> FromTodoTasks(this IEnumerable<TodoTask> todoTasks)
+        {
+            return todoTasks.Select(Mapper.Map<TaskModel>).ToList();
         }
     }
 }
