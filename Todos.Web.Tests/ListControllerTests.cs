@@ -8,23 +8,27 @@ using Newtonsoft.Json;
 using todos.Web.ApiModels;
 using Todos.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Todos.Web.Tests
 {
     public class ListControllerTests : IClassFixture<TestServerFixture>
     {
         private readonly TestServerFixture _fixture;
+        private readonly ITestOutputHelper _output;
 
-        public ListControllerTests(TestServerFixture fixture)
+        public ListControllerTests(TestServerFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
+            _output = output;
         }
 
         [Fact] public async Task Get_ReturnsAll()
         {
             await CreateTaskList();
-            var taskList = await Get<List<TaskListModel>>();
-            taskList.Should().NotBeEmpty();
+            var allTaskLists = await Get<List<TaskListModel>>();
+            allTaskLists.Should().NotBeEmpty();
+            allTaskLists.ForEach(x => _output.WriteLine(x.ToString()));
         }
         
         [Fact]

@@ -12,17 +12,12 @@ namespace todos.Web.ApiModels
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-
         public List<TaskModel> Tasks { get; set; }
 
-        public static TaskListModel FromTodoTaskList(TodoTaskList list, IEnumerable<TodoTask> todoTasks)
+        public override string ToString()
         {
-            return new TaskListModel()
-            {
-                Id = list.Id,
-                Description = list.Description,
-                Tasks = TaskModel.FromTodoTasks(todoTasks)
-            };
+            return $"{Id}: {Name}, {Description}, \n {string.Join("\n ", Tasks)}";
         }
     }
+
 }

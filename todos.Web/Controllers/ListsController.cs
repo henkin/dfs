@@ -34,7 +34,7 @@ namespace Todos.Web.Controllers
                 var taskLists = _listRepository.GetAll();
                 var tasks = _taskRepository.GetAll();
                 var listsWithTasks = taskLists.Select(list => 
-                    TaskListModel.FromTodoTaskList(list, tasks.Where(t => t.TaskListId == list.Id))
+                    list.FromTodoTaskList(tasks.Where(t => t.TaskListId == list.Id))
                     ).ToList();
                 return new JsonResult(listsWithTasks);
             }
@@ -53,7 +53,7 @@ namespace Todos.Web.Controllers
             {
                 var taskList = _listRepository.GetById(id);
                 var tasks = _taskRepository.Find(t => t.TaskListId == id);
-                return new JsonResult(TaskListModel.FromTodoTaskList(taskList, tasks));
+                return new JsonResult(taskList.FromTodoTaskList(tasks));
             }
             catch (Exception ex)
             {

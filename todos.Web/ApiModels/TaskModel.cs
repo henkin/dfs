@@ -20,5 +20,10 @@ namespace todos.Web.ApiModels
                 Completed = task.Completed
             }).ToList();
         }
+
+        public override string ToString()
+        {
+            return $"{Id}: {Name}, completed: {Completed}";
+        }
     }
 }
