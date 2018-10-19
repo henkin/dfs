@@ -10,7 +10,7 @@ using Todos.Models;
 namespace Todos.Web.Controllers
 {
     // https://app.swaggerhub.com/apis/aweiker/ToDo/1.0.0
-    [Route("[controller]")]
+    [Route("lists")]
     [ApiController]
     public class ListsController : ControllerBase
     {
@@ -113,7 +113,12 @@ namespace Todos.Web.Controllers
         [Produces("text/html")]
         public ContentResult About()
         {
-            return Content("<html><body><a href='Lists'>Lists</a></body></html>", "text/html");
+            return Content(@"<html><body>
+                <ul>
+                    <li><a href='swagger'>swagger</a>
+                    <li><a href='lists'>lists</a>
+                </ul>
+            </body></html>", "text/html");
         }
     }
 }

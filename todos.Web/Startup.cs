@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NJsonSchema;
+using NSwag.AspNetCore;
+using System.Reflection;
 
 namespace Todos.Web
 {
@@ -26,7 +29,8 @@ namespace Todos.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            
+            services.AddSwagger();
+
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
 
@@ -44,6 +48,12 @@ namespace Todos.Web
 
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            app.UseSwaggerUi3WithApiExplorer(settings =>
+            {
+                settings.GeneratorSettings.DefaultPropertyNameHandling = 
+                    PropertyNameHandling.CamelCase;
+            });
         }
     }
 }
