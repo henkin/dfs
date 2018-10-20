@@ -31,8 +31,8 @@ namespace Todos.Web.Controllers
         {
             try
             {
-                var taskLists = _listRepository.GetAll();
-                var tasks = _taskRepository.GetAll();
+                var taskLists = _listRepository.GetAll().ToList();
+                var tasks = _taskRepository.GetAll().ToList();
                 var listsWithTasks = taskLists.Select(list => 
                     list.FromTodoTaskList(tasks.Where(t => t.TaskListId == list.Id))
                     ).ToList();
@@ -109,16 +109,16 @@ namespace Todos.Web.Controllers
 //            } 
 //        }
         
-        [HttpGet("/")]
-        [Produces("text/html")]
-        public ContentResult About()
-        {
-            return Content(@"<html><body>
-                <ul>
-                    <li><a href='swagger'>swagger</a>
-                    <li><a href='lists'>lists</a>
-                </ul>
-            </body></html>", "text/html");
-        }
+//        [HttpGet("/")]
+//        [Produces("text/html")]
+//        public ContentResult About()
+//        {
+//            return Content(@"<html><body>
+//                <ul>
+//                    <li><a href='swagger'>swagger</a>
+//                    <li><a href='lists'>lists</a>
+//                </ul>
+//            </body></html>", "text/html");
+//        }
     }
 }

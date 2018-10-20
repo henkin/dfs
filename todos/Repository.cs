@@ -9,10 +9,12 @@ namespace Todos
 {
     public class Repository<T> : IRepository<T> where T : Entity
     {
+        private readonly IDbProvider _dbProvider;
         private string _collectionName;
 
-        public Repository()
+        public Repository(IDbProvider dbProvider)
         {
+            _dbProvider = dbProvider;
             _collectionName = typeof(T).Name.Pluralize().Underscore();
         }
         
@@ -25,11 +27,8 @@ namespace Todos
 
         private TRet Execute<TRet>(Func<LiteCollection<T>, TRet> func)
         {
-            using (var db = new LiteDatabase(@"C:\Temp\MyData.db"))
-            {
-                var col = db.GetCollection<T>(_collectionName);
-                return func.Invoke(col);
-            }
+            var col = _dbProvider.Db.GetCollection<T>(_collectionName);
+            return func.Invoke(col);
         }
     }
 }
