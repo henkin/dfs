@@ -1,38 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using todos.Web.ApiModels;
-using Todos.Models;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Todos.Web.Tests
 {
-    public class ListControllerTests : BaseControllerTests, IClassFixture<TestServerFixture>
+    public class TaskControllerTests : BaseControllerTests, IClassFixture<TestServerFixture>
     {
-        public ListControllerTests(TestServerFixture fixture, ITestOutputHelper output) : base(fixture, output)
+        public TaskControllerTests(TestServerFixture fixture, ITestOutputHelper output) : base(fixture, output)
         {
-            ControllerUrl = "Lists/";
+            ControllerUrl = "Tasks/";
         }
 
         [Fact] public async Task Get_ReturnsAll()
         {
-            await CreateTaskList();
-            var allTaskLists = await Get<List<TaskListModel>>();
+            var allTaskLists = await Get<List<TaskModel>>();
             allTaskLists.Should().NotBeEmpty();
             allTaskLists.ForEach(x => _output.WriteLine(x.ToString()));
         }
         
         [Fact]
-        public async Task Post_CreatesTaskList()
+        public async Task Post_CreatesTaskForList()
         {
-            var savedTask = await CreateTaskList();
-            var actual = await GetById<TaskListModel>(savedTask.Id);
-            actual.Should().BeEquivalentTo(savedTask);
+            var taskList = await CreateTaskList();
+            var task = new TaskModel
+            {
+                Name = "Test",
+                Completed = false,
+                TaskListId = taskList.Id
+            };
+            
+            var expected = await Post(task);
+            var actual = await GetById<TaskModel>(expected.Id);
+            //actual.Should().Equals(expected, (e1, e2) => e1.Id == e2.Id);
+            actual.Should().BeEquivalentTo(expected);
         }
         
 //        [Fact]
@@ -59,5 +65,15 @@ namespace Todos.Web.Tests
 //            actual.Should().BeNull();
 //        }
 //        
+        private async Task<TaskModel> CreateTaskForList()
+        {
+            var task = new TaskModel
+            {
+                Name = "Test",
+                Completed = false
+            };
+            var savedTask = await Post(task);
+            return savedTask;
+        }
     }
 }

@@ -70,7 +70,7 @@ namespace Todos.Web.Controllers
                 _listRepository.Create(list);
                 var tasks = taskList.Tasks.Select(t => t.ToTodoTask(list.Id)).ToList();
                 tasks.ForEach(t => _taskRepository.Create(t));
-                
+                taskList.Tasks = tasks.FromTodoTasks();
                 return CreatedAtAction("Get", new {id = taskList.Id}, taskList);
             }
             catch (Exception ex)

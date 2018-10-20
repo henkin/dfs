@@ -8,6 +8,7 @@ namespace todos.Web.ApiModels
     public class TaskModel
     {
         public Guid Id { get; set; }
+        public Guid TaskListId { get; set; }
         public string Name { get; set; }
         public bool Completed { get; set; }
 
@@ -15,8 +16,6 @@ namespace todos.Web.ApiModels
         {
             Id = Guid.NewGuid();
         }
-
-        
 
         public override string ToString()
         {
