@@ -12,11 +12,12 @@ using Xunit.Abstractions;
 
 namespace Todos.Web.Tests
 {
+    [Collection("Controller Tests")]
     public class ListControllerTests : BaseControllerTests, IClassFixture<TestServerFixture>
     {
         public ListControllerTests(TestServerFixture fixture, ITestOutputHelper output) : base(fixture, output)
         {
-            ControllerUrl = "Lists/";
+            ControllerUrl = "lists/";
         }
 
         [Fact] public async Task Get_ReturnsAll()

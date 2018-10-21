@@ -35,10 +35,10 @@ namespace Todos.Web.Tests
             return await GetSuccessfulResponseData<T>(response);
         }
 
-        protected async Task<T> Put<T>(T item) where T : Entity
+        protected async Task<T> Put<T>(T item, Guid id)
         {
             var stringContent = StringContent(item);
-            var response = await _fixture.Client.PutAsync(ControllerUrl + item.Id, stringContent);
+            var response = await _fixture.Client.PutAsync(ControllerUrl + id, stringContent);
             return await GetSuccessfulResponseData<T>(response);
         }
 
@@ -71,6 +71,10 @@ namespace Todos.Web.Tests
             return stringContent;
         }
 
+        /// <summary>
+        /// This will be refactored into a separate Test Workflow component
+        /// </summary>
+        /// <returns></returns>
         protected async Task<TaskListModel> CreateTaskList()
         {
             var taskList = new TaskListModel()

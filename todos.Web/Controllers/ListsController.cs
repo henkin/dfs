@@ -23,7 +23,7 @@ namespace Todos.Web.Controllers
             _taskRepository = taskRepository;
         }
         
-        // GET /Lists
+        // GET /lists
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
@@ -44,7 +44,7 @@ namespace Todos.Web.Controllers
             }               
         }
 
-        // GET /Lists/5
+        // GET /lists/5
         [HttpGet("{id}")]
         public ActionResult<string> Get(Guid id)
         {
@@ -60,7 +60,7 @@ namespace Todos.Web.Controllers
             } 
         }
 
-        // POST /Lists
+        // POST /lists
         [HttpPost]
         public ActionResult Post([FromBody] TaskListModel taskList)
         {

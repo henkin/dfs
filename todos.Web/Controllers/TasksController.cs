@@ -5,7 +5,6 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using todos.Models;
 using todos.Web.ApiModels;
-using Todos.Models;
 
 namespace Todos.Web.Controllers
 {
@@ -14,16 +13,13 @@ namespace Todos.Web.Controllers
     [ApiController]
     public class TasksController : ControllerBase
     {
-//        private readonly IRepository<TodoTaskList> _listRepository;
         private readonly IRepository<TodoTask> _taskRepository;
 
         public TasksController(IRepository<TodoTask> taskRepository)
         {
-            //_listRepository = listRepository;
             _taskRepository = taskRepository;
         }
         
-        // GET /Lists
         [HttpGet]
         public ActionResult<IEnumerable<TaskListModel>> Get()
         {
@@ -35,11 +31,10 @@ namespace Todos.Web.Controllers
             catch (Exception ex)
             {
                 return StatusCode((int) HttpStatusCode.NotFound);
-                //return StatusCode((int) HttpStatusCode.InternalServerError, ex.Message);
             }               
         }
 
-        // GET /Lists/5
+        // GET /tasks
         [HttpGet("{id}")]
         public ActionResult<string> Get(Guid id)
         {
@@ -54,16 +49,16 @@ namespace Todos.Web.Controllers
             } 
         }
 
-        // POST /Lists
+        // POST /tasks
         [HttpPost]
-        public ActionResult Post([FromBody] TaskModel taskList)
+        public ActionResult Post([FromBody] TaskModel todoTask)
         {
             try
             {
-                var task = taskList.ToTodoTask();
+                var task = todoTask.ToTodoTask();
                 _taskRepository.Create(task);
                 
-                return CreatedAtAction("Get", new {id = taskList.Id}, taskList);
+                return CreatedAtAction("Get", new {id = todoTask.Id}, todoTask);
                 //Ok();
             }
             catch (Exception ex)
@@ -72,6 +67,23 @@ namespace Todos.Web.Controllers
             } 
         }
 
+        [HttpPut("{id}")]
+        public ActionResult Put(Guid id, [FromBody] TaskModel taskModel)
+        {
+            try
+            {
+                // this 
+                var todoTask = taskModel.ToTodoTask();
+                _taskRepository.Update(todoTask);
+                
+                return CreatedAtAction("Get", new {id = taskModel.Id}, todoTask);
+                //Ok();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            } 
+        }
 //        // PUT api/values/5
 //        [HttpPut("{id}")]
 //        public void Put(Guid id, [FromBody] TodoTaskList todoTaskList)
