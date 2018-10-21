@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using todos.Models;
@@ -11,6 +12,7 @@ namespace todos.Web.ApiModels
     public class TaskListModel 
     {
         public Guid Id { get; set; }
+        [Display(Description = "Must be unique")]
         public string Name { get; set; }
         public string Description { get; set; }
         public List<TaskModel> Tasks { get; set; }

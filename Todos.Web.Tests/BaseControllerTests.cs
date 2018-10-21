@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -42,9 +43,9 @@ namespace Todos.Web.Tests
             return await GetSuccessfulResponseData<T>(response);
         }
 
-        protected async Task<T> Get<T>()
+        protected async Task<T> Get<T>(string url = null)
         {
-            var response = await _fixture.Client.GetAsync(ControllerUrl);
+            var response = await _fixture.Client.GetAsync(url ?? ControllerUrl);
             return await GetSuccessfulResponseData<T>(response);
         }
 
@@ -74,12 +75,11 @@ namespace Todos.Web.Tests
         /// <summary>
         /// This will be refactored into a separate Test Workflow component
         /// </summary>
-        /// <returns></returns>
-        protected async Task<TaskListModel> CreateTaskList()
+        protected async Task<TaskListModel> CreateTaskList(string listName = null)
         {
             var taskList = new TaskListModel()
             {
-                Name = "TestTaskList",
+                Name = listName ?? "TestTaskList",
                 Description = "TestDescription",
                 Tasks = new List<TaskModel>()
                 {

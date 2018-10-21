@@ -28,6 +28,34 @@ namespace Todos.Web.Tests
             allTaskLists.ForEach(x => _output.WriteLine(x.ToString()));
         }
         
+        [Fact] public async Task Get_SearchString()
+        {
+            var searchListName = "Searchable";
+            await CreateTaskList(searchListName);
+            var allTaskLists = await Get<List<TaskListModel>>(GenerateGetUrl(search: searchListName));
+            allTaskLists.Should().NotBeEmpty();
+            allTaskLists.ForEach(l => l.Name.Should().Be(searchListName));
+        }
+        
+        [Fact] public async Task Get_Skip()
+        {
+            // create at least 2
+            await CreateTaskList();
+            await CreateTaskList();
+            
+            var allTaskLists = await Get<List<TaskListModel>>(GenerateGetUrl(skip: 1));
+            allTaskLists.Should().NotBeEmpty();
+            // how to test for skip?
+            // the test initialization would be a fair amount of work.. 
+        }
+        
+        [Fact] public async Task Get_Limit()
+        {
+            await CreateTaskList();
+            var allTaskLists = await Get<List<TaskListModel>>(GenerateGetUrl(limit: 2));
+            allTaskLists.Should().HaveCountLessOrEqualTo(2);
+        }
+        
         [Fact]
         public async Task Post_CreatesTaskList()
         {
@@ -36,29 +64,13 @@ namespace Todos.Web.Tests
             actual.Should().BeEquivalentTo(savedTask);
         }
         
-//        [Fact]
-//        public async Task Put_UpdatesTaskList()
-//        {
-//            var taskList = await CreateTaskList();
-//            var updatedDescription = "Updated Description";
-//            taskList.Description = updatedDescription;
-//
-//            await Put(taskList);
-//            
-//            var actual = await GetById<TodoTaskList>(taskList.Id);
-//            actual.Description.Should().Be(updatedDescription);
-//        }
-//        
-//        [Fact]
-//        public async Task Delete_DeletesTaskList()
-//        {
-//            var savedTask = await CreateTaskList();
-//           
-//            await Delete(savedTask.Id);
-//            
-//            var actual = await GetById<TodoTaskList>(savedTask.Id);
-//            actual.Should().BeNull();
-//        }
-//        
+        private string GenerateGetUrl(string search = null, int? skip = null, int? limit = null)
+        {
+            var url = "lists/";
+            if (search != null) url += "?search=" + search;
+            if (skip != null) url += "?skip=" + skip;
+            if (limit != null) url += "?limit=" + limit;
+            return url;
+        }
     }
 }

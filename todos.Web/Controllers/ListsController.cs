@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using NSwag;
+using NSwag.Annotations;
 using todos.Models;
 using todos.Web.ApiModels;
 using Todos.Models;
@@ -23,16 +26,26 @@ namespace Todos.Web.Controllers
             _taskRepository = taskRepository;
         }
         
-        // GET /lists
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public ActionResult<IEnumerable<TaskListModel>> Get()
+        public ActionResult<IEnumerable<TaskListModel>> Get(string search, int? skip, int? limit)
         {
             try
             {
                 var taskLists = _listRepository.GetAll().ToList();
+                
+                // in real, production code, this filtering would be pushed down the the persistence layer queries.
+                if (!string.IsNullOrEmpty(search))
+                {
+                    taskLists = taskLists.Where(l => l.Name == search).ToList();
+                }
+
+                if (skip.HasValue) taskLists = taskLists.Skip(skip.Value).ToList();
+                if (limit.HasValue) taskLists = taskLists.Take(limit.Value).ToList();
+                
                 var tasks = _taskRepository.GetAll().ToList();
+                
                 var listsWithTasks = taskLists.Select(list => 
                     list.FromTodoTaskList(tasks.Where(t => t.TaskListId == list.Id))
                     ).ToList();
