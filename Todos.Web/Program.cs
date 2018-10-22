@@ -19,7 +19,7 @@ namespace Todos.Web
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseUrls("http://localhost:5000", "http://definition.ist:5000")
+//                .UseUrls("http://localhost:5000", "http://definition.ist:5000")
                 .UseStartup<Startup>();
     }
 }
