@@ -30,7 +30,7 @@ namespace Todos.Web.Tests
         
         [Fact] public async Task Get_SearchString()
         {
-            var searchListName = "Searchable";
+            var searchListName = "Searchable" + DateTime.Now.Ticks;
             await CreateTaskList(searchListName);
             var allTaskLists = await Get<List<TaskListModel>>(GenerateGetUrl(search: searchListName));
             allTaskLists.Should().NotBeEmpty();

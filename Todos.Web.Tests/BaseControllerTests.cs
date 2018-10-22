@@ -16,11 +16,13 @@ namespace Todos.Web.Tests
         protected TestServerFixture _fixture;
         protected ITestOutputHelper _output;
         protected string ControllerUrl;
+        private Random _rand;
 
         protected BaseControllerTests(TestServerFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
             _output = output;
+            _rand = new Random((int)DateTime.Now.Ticks);
         }
         
         protected async Task Delete(Guid id)
@@ -77,15 +79,16 @@ namespace Todos.Web.Tests
         /// </summary>
         protected async Task<TaskListModel> CreateTaskList(string listName = null)
         {
-            var taskList = new TaskListModel()
+            var random = _rand.Next(10000000);
+            var taskList = new TaskListModel
             {
-                Name = listName ?? "TestTaskList",
+                Name = listName ?? "TestTaskList" + random,
                 Description = "TestDescription",
-                Tasks = new List<TaskModel>()
+                Tasks = new List<TaskModel>
                 {
-                    new TaskModel()
+                    new TaskModel
                     {
-                        Name = "TestTaskName",
+                        Name = "TestTaskName" + random,
                         Completed = false
                     }
                 }

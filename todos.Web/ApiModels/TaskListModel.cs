@@ -11,9 +11,11 @@ namespace todos.Web.ApiModels
 {
     public class TaskListModel 
     {
+        [Display(Description = "example: 0e2ac84f-f723-4f24-878b-44e63e7ae580")]
         public Guid Id { get; set; }
         [Display(Description = "Must be unique")]
         public string Name { get; set; }
+        [Display(Description = "Must be unique")]
         public string Description { get; set; }
         public List<TaskModel> Tasks { get; set; }
 

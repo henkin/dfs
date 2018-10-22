@@ -21,6 +21,8 @@ namespace Todos.Web.Controllers
         }
         
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public ActionResult<IEnumerable<TaskListModel>> Get()
         {
             try
@@ -30,88 +32,69 @@ namespace Todos.Web.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int) HttpStatusCode.NotFound);
+                return StatusCode(404);
             }               
         }
 
         // GET /tasks
         [HttpGet("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public ActionResult<string> Get(Guid id)
         {
             try
             {
                 var task = _taskRepository.GetById(id);
+                if (task == null)
+                    return StatusCode(400);
+                
                 return new JsonResult(task);
             }
             catch (Exception ex)
             {
-                return StatusCode((int) HttpStatusCode.NotFound);
+                return StatusCode(404);
             } 
         }
 
         // POST /tasks
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
         public ActionResult Post([FromBody] TaskModel todoTask)
         {
             try
             {
                 var task = todoTask.ToTodoTask();
-                _taskRepository.Create(task);
+                var todoTasks = _taskRepository.Find(l => l.Name == todoTask.Name).ToList();
+                if (todoTasks.Any())
+                    return StatusCode(409);
                 
+                _taskRepository.Create(task);
                 return CreatedAtAction("Get", new {id = todoTask.Id}, todoTask);
-                //Ok();
             }
             catch (Exception ex)
             {
-                throw;
+                return StatusCode(400);
             } 
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
         public ActionResult Put(Guid id, [FromBody] TaskModel taskModel)
         {
             try
             {
-                // this 
                 var todoTask = taskModel.ToTodoTask();
                 _taskRepository.Update(todoTask);
-                
                 return CreatedAtAction("Get", new {id = taskModel.Id}, todoTask);
-                //Ok();
             }
             catch (Exception ex)
             {
-                throw;
+                return StatusCode(400);
             } 
         }
-//        // PUT api/values/5
-//        [HttpPut("{id}")]
-//        public void Put(Guid id, [FromBody] TodoTaskList todoTaskList)
-//        {
-//            try
-//            {
-//                _repository.Update(todoTaskList);
-//                Ok();
-//            }
-//            catch (Exception ex)
-//            {
-//                throw;
-//            } 
-//        }
-
-//        // DELETE api/values/5
-//        [HttpDelete("{id}")]
-//        public void Delete(Guid id)
-//        {
-//            try
-//            {
-//                _repository.Delete(id);
-//                Ok();
-//            }
-//            catch (Exception ex)
-//            {
-//                throw;
-//            } 
-//        }
     }
 }

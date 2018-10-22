@@ -25,16 +25,16 @@ namespace Todos.Web.Controllers
             _listRepository = listRepository;
             _taskRepository = taskRepository;
         }
-        
+
         [HttpGet]
         [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         public ActionResult<IEnumerable<TaskListModel>> Get(string search, int? skip, int? limit)
         {
             try
             {
                 var taskLists = _listRepository.GetAll().ToList();
-                
+
                 // in real, production code, this filtering would be pushed down the the persistence layer queries.
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -43,42 +43,54 @@ namespace Todos.Web.Controllers
 
                 if (skip.HasValue) taskLists = taskLists.Skip(skip.Value).ToList();
                 if (limit.HasValue) taskLists = taskLists.Take(limit.Value).ToList();
-                
+
                 var tasks = _taskRepository.GetAll().ToList();
-                
-                var listsWithTasks = taskLists.Select(list => 
+
+                var listsWithTasks = taskLists.Select(list =>
                     list.FromTodoTaskList(tasks.Where(t => t.TaskListId == list.Id))
-                    ).ToList();
+                ).ToList();
                 return new JsonResult(listsWithTasks);
             }
             catch (Exception ex)
             {
-                throw;
-            }               
+                return StatusCode(400, "bad input parameter");
+            }
         }
 
         // GET /lists/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(Guid id)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public ActionResult<TaskListModel> Get(Guid id)
         {
             try
             {
                 var taskList = _listRepository.GetById(id);
+                if (taskList == null) return StatusCode(404, "list not found"); // Not found
                 var tasks = _taskRepository.Find(t => t.TaskListId == id).ToList();
+
                 return new JsonResult(taskList.FromTodoTaskList(tasks));
             }
             catch (Exception ex)
             {
-                return StatusCode((int) HttpStatusCode.NotFound);
-            } 
+                return StatusCode(400, "invalid id supplied");
+            }
         }
 
         // POST /lists
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
         public ActionResult Post([FromBody] TaskListModel taskList)
         {
             try
             {
+                // existing item
+                if (_listRepository.Find(l => l.Name == taskList.Name).Any())
+                    return StatusCode(409);
+
                 var list = taskList.ToTodoTaskList();
                 _listRepository.Create(list);
                 var tasks = taskList.Tasks.Select(t => t.ToTodoTask(list.Id)).ToList();
@@ -88,50 +100,8 @@ namespace Todos.Web.Controllers
             }
             catch (Exception ex)
             {
-                throw;
-            } 
+                return StatusCode(409);
+            }
         }
-
-//        // PUT api/values/5
-//        [HttpPut("{id}")]
-//        public void Put(Guid id, [FromBody] TodoTaskList todoTaskList)
-//        {
-//            try
-//            {
-//                _repository.Update(todoTaskList);
-//                Ok();
-//            }
-//            catch (Exception ex)
-//            {
-//                throw;
-//            } 
-//        }
-
-//        // DELETE api/values/5
-//        [HttpDelete("{id}")]
-//        public void Delete(Guid id)
-//        {
-//            try
-//            {
-//                _repository.Delete(id);
-//                Ok();
-//            }
-//            catch (Exception ex)
-//            {
-//                throw;
-//            } 
-//        }
-        
-//        [HttpGet("/")]
-//        [Produces("text/html")]
-//        public ContentResult About()
-//        {
-//            return Content(@"<html><body>
-//                <ul>
-//                    <li><a href='swagger'>swagger</a>
-//                    <li><a href='lists'>lists</a>
-//                </ul>
-//            </body></html>", "text/html");
-//        }
     }
 }
